@@ -24,7 +24,7 @@ upstream backendserver {
     server 127.0.0.1:7777;
 }
 location / {
-    proxy.pass http://backendserver/ *This configuration will allow load balancing around the different servers
+    proxy_pass http://backendserver/ *This configuration will allow load balancing around the different servers
 }
 
 location /car { root /Users/Desktop/mysite; #This will append /fruits to the root alias /Users/DesktopJmysite/car #If you use this it will not append /car to the end #When you use this what we serve is the index.html file under the folder that mentionned and if the index file is not found we will get a 403 Forbidden error
