@@ -122,6 +122,7 @@ RUN export ADMIN_USER="mark" \
     && unset ADMIN_USER
 CMD sh
 ```
+- Unlike an `ARG` instruction, `ENV` values are always persisted in the built image.
 ## ADD or COPY
 - Although `ADD` and `COPY` are functionally similar, generally speaking `COPY` is preferred. that's because it's more transparent than `ADD`. `COPY` only supports the basic copying ol local files into the container, while `ADD` has some features like local-only tar extraction and remote URL support that are not immediately obvious. Consequently, the best use for `ADD` is `local tar file auto-extraction` into the image, as in `ADD rootfs.tar.xz / .`.
 - Because the image size matters, using `ADD` to fetch packages from remote URLs is strongly discouraged; you should use `curl` or `wget` instead. That way you can delete the files you no longer need after they have been extracted and you don't have to add another layer in your image.
@@ -141,7 +142,6 @@ RUN pwd
 ```
 - The output of the final pwd command in this Dockerfile would be `/a/b/c`.
 - If not specified, the `default working directory` is `/`.
-- Unlike an `ARG` instruction, `ENV` values are always persisted in the built image.
 ## USER
 - The default user in docker exec is the same user used to start the container which can be set in docker run or your compose file.
 - If you don't explicitly set the user when starting the container, it will default to the user configured in the image, you can inspect the image to look this up. This is configured by the last USER line in the Dockerfile. it may also be configured by a parent image specified by the FROM line.
