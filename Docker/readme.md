@@ -4,14 +4,19 @@
 - If you attempt to build an image using Dockerfile from stdin without sending build context, then the build will fail if you use `COPY` or `ADD`.The following example illustrates this:
 ```conf
 # create a directory to work in
+
 mkdir examole ad example
+
 # create an example file
+
 touch somefile. txt
+
 docker build -t myimage: latest -<<EOF
 FROM busybox
 COPY somefile.txt ./
 RUN cat /somefile.txt
 EOF
+
 #observe that the build fails
 ...
 Step 2/3 : COPY somefile.txt ./
@@ -38,11 +43,10 @@ docker build [OPTIONS] -f- PATH
 docker build https://github.com/docker/nootfs.git#container:docker
 ```
 - If you pass an URL to a remote tarball (archive distante), the url itself is sent to the daemon. The download operation will be performed on the host the dockerdaemon is running on, which is not necessarily the same host from which the build command is being issued
-Multi stage build
-allows you to drastically reduce the size of your final image, without struggling to reduce the number of intermediate layers and files.
-without struggling to reduce
+## Multi stage build
+- allows you to drastically reduce the size of your final image, without struggling to reduce the number of intermediate layers and files.
 - Because an image is built during the final stage of the build process, you can minimize image layers by leveraging build cache.
-- If the build contains several layers and you want to ensure the build cache is reusable, you can order them from the less frequently changed to the more frequently changed.
+- If the build contains several layers and you want to ensure the build cache is reusable, you can `order them from the less frequently changed to the more frequently changed`.
 ```conf
 # syntax=docker/dockerfile: 1
 FROM golang:1.16-alpine AS build
@@ -55,29 +59,34 @@ RUN go get github.com/golang/dep/cmd/dep
 # List project dependencies with Gopkg. tomI and Gopkg. lock
 # These layers are only re-built when Gopkg files are updated
 COPY Gopkg. lock Gopkg. toml / go/src/project/
+
 WORKDIR /go/src/project/
+
 # Install library dependencies
 RUN dep ensure -vendor-only
+
 # Copy the entire project and build it
 # This layer is rebuilt when a file changes in the project directory
+
 COPY . /go/src/project/
+
 RUN go build -o /bin/project
 # This results in a single layer image
-FROM scratch
 
+FROM scratch
 COPY --from-build /bin/project /bin/project
 ENTRYPOINT [" /bin/project"]
 CMD ["--help" ]
 ```
 ## Minimize the number of layers:
-- Only instruction. `RUN`, `COPY`, `ADD` create layers. Other instructions, create temporary intermediate images and don't increase the size of the build.
-- Prior to Docker version 1.10, it was recomended to combine all labels into a single LABEL instruction, to prevent extra layers from being created. This is no longer necessary, but combining labels is still suported.
+- Only instruction. `RUN`, `COPY`, `ADD` create layers. Other instructions, create **`temporary intermediate images`** and don't increase the size of the build.
+- Prior to Docker version 1.10, it was recomended to combine all labels into a single `LABEL` instruction, to prevent extra layers from being created. This is no longer necessary, but combining labels is still suported.
 - Split long or complex `RUN` statements on multiple lines separated with backslashes to make your dockerfile more readable, understandable and maintainable.
 ## Leverage Build Cache
 - Starting with a parent image that's already in the cache, the next instruction compared against all child images derived from the base image to see if one of them was built using the exact same instruction. If not, the cache is invalidated.
-- In most cases, simply comparing the instruction in the dockerfile with one of the cild images is sufficient. However, certain instructions require more examination and explanation.
-- For `ADD` and `COPY` instructions, the contents of each file in the image are examined and a checksum is calculated for each file. The last-modified and last-accessed times of each file aren't considered in these checksums. During the cache lookup, the checksum is compared against the checksum in the existing images.If anything has changed in any file, such as the contents and its metadata, then the cache is invalidated.
-- Aside from the `ADD` and `COPY` commands, cache checking doesn't look at the files in the container to deterline a cache match. For Example, when processing `Run apt-get -y update` command the files updated in the container aren't examinated to determine if a cache hit exists. In that case just the command string itself is used to find a match.
+- In most cases, simply comparing the instruction in the dockerfile with one of the child images is sufficient. However, certain instructions require more examination and explanation.
+- For `ADD` and `COPY` instructions, the contents of each file in the image are examined and a `checksum` is calculated for each file. The last-modified and last-accessed times of each file aren't considered in these checksums. During the cache lookup, the checksum is compared against the checksum in the existing images.If anything has changed in any file, such as the contents and its metadata, then the cache is invalidated.
+- Aside from the `ADD` and `COPY` commands, cache checking doesn't look at the files in the container to determine a cache match. For Example, when processing `Run apt-get -y update` command the files updated in the container aren't examinated to determine if a cache hit exists. In that case just the command string itself is used to find a match.
 ```conf
 # syntax=docker/dockerfile:1
 FROM ubuntu:18.04
@@ -132,7 +141,7 @@ RUN pwd
 ```
 - The output of the final pwd command in this Dockerfile would be `/a/b/c`.
 - If not specified, the `default working directory` is `/`.
-- Unline an `ARG` instruction, `ENV` values are always persisted in the built image.
+- Unlike an `ARG` instruction, `ENV` values are always persisted in the built image.
 ## USER
 - The default user in docker exec is the same user used to start the container which can be set in docker run or your compose file.
 - If you don't explicitly set the user when starting the container, it will default to the user configured in the image, you can inspect the image to look this up. This is configured by the last USER line in the Dockerfile. it may also be configured by a parent image specified by the FROM line.
