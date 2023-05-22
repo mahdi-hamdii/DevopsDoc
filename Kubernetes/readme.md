@@ -20,3 +20,33 @@
 - `nginx.ingress.kubernetes.io/ssl-passthrough`: when enabled request will not be decrypted at the load balancer but passed along to a server for decryption. SSL passthough is used when web application security is a top concern. 
 - `nginx.ingress.kubernetes.io/backend-protocol`: le protocol de communication entre le ingress controller et le backend. 
 - `kubernetes.io/ingress.allow-http`: if you want to disable HTTP traffic between the client and the load balancer you should mark it false. 
+<br>
+
+# Pull From Private Registry:
+
+- A kubernetes cluster uses the secret of `kubernetes.io/dockerconfigjson` type to authenticate with a container registry to pull a private image.
+- If you already ran `docker login`, you can copy that credentials into kubernetes:
+```conf
+kubectl create secret generic regcred \
+    --from-file=.dockerconfigjson=<path/to/.docker/config.json> \
+    --type=kubernetes.io/dockerconfigjson
+```
+- Base64 encode the docker configuration file and then pass that string, unbroken as the value field data[".dockerconfigjson"]
+
+- **Create Secret By providing credentials on the CLI**: Create this secret naming it `regcred`
+```conf
+kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+```
+- **Create Pod that uses the secret**: 
+```conf
+apiVersion: v1
+kind: Pod
+metadata:
+  name: private-reg
+spec:
+  containers:
+  - name: private-reg-container
+    image: <your-private-image>
+  imagePullSecrets:
+  - name: regcred
+```

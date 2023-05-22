@@ -22,7 +22,7 @@ EOF
 Step 2/3 : COPY somefile.txt ./
 COPY failed: stat /var/lib/docker/tmp/docker-builder249218248/somefile.txt: no such file or directory
 ```
-- The example below uses the current directory (.) as the build context, and builds an image using a Dockerfile that is passed through stdin using a here document.
+- The example below uses the current directory `(.)` as the build context, and builds an image using a Dockerfile that is passed through stdin using a here document.
 ```conf
 # build an image using the current dinectony as context, and a Dockerfile passed through stain
 docker build -t myimage: latest -f-
@@ -37,7 +37,7 @@ docker build [OPTIONS] -f- PATH
 ```
 - We can build an image using a remote Git repository as build context, Docker performs a git clone of the repository on the local machine and sends those files as build context to the daemon, this feature requires you to install `Git` on the host where you run docker build command. The commit history is not preserved. A repository is first pulled to a temporary directory on your local host. after that succeds the directory is sent to the Docker daemon as the context. Local copy gives you the ability to access private repositories using local user credentials, VPN's and so forth.
 - The build context is the set of files located in the specified `PATH` or `URL` The build process can refer to any of the files in the context. For example, your build can use a `copy` instruction to reference a file in the context.
-- THE `URL` parameter can refer to three kinds of resources: Git repositories, pre-packaged tarball contexts and plain text files.
+- THE `URL` parameter can refer to three kinds of resources: `Git repositories`, `pre-packaged tarball` contexts and `plain text files`.
 -  Git URLs accept context configuration in their fragment section, separated by a colon `(:)`.The first part represents the reference that git will check out, and can be either a branch, a tag, or a remote reference. The second part represents a subdirectory inside the repository that will be used as build context.
 ```conf
 docker build https://github.com/docker/nootfs.git#container:docker
