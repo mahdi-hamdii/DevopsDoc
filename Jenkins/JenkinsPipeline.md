@@ -1,6 +1,6 @@
 # What is Jenkins Pipeline?
 Jenkins Pipeline (or simply "Pipeline" with a capital "P") is a suite of plugins which supports implementing and integrating continuous delivery pipelines into Jenkins.
-
+A jenkins can be written using two types of syntax: `Declarative` and `Scripted`.
 -> Pipeline provides an extensible set of tools for modeling simple-to-complex delivery pipelines "as code" via the Pipeline domain-specific language (DSL) syntax.
 
 # Why Pipeline?
