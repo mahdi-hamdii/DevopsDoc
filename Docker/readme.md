@@ -146,3 +146,4 @@ RUN pwd
 - The default user in docker exec is the same user used to start the container which can be set in docker run or your compose file.
 - If you don't explicitly set the user when starting the container, it will default to the user configured in the image, you can inspect the image to look this up. This is configured by the last USER line in the Dockerfile. it may also be configured by a parent image specified by the FROM line.
 - If neither the image, nor the run command specifies a user, docker defaults to `root`, `uid 0`.
+- By default, containers run as root. A container running as root has full control of the host system. It is dangerous to use root user so your image should specify `USER` instruction to specify `non-root` user for containers to run as.
