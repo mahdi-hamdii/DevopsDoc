@@ -10,7 +10,7 @@
     - JobDSL plugin (groovy)
     - Job builder plugin (yaml)
     - Jenkins pipeline: Multi-branch, organizations folders
-- First the configuration as code plugin must be installed on the Jenkins Controller, if you do not see the Confi system configuration section of the Manage Jenkins page, you need to install the plugin
+- First the configuration as code plugin must be installed on the Jenkins Controller, if you do not see the system configuration section of the Manage Jenkins page, you need to install the plugin
 ```conf 
 jobs:
     - script: >
