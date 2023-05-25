@@ -37,4 +37,4 @@ jobs:
 - **`pipelineJob`**: Creates or updates a pipeline job
 - **`SCM`**: SCM stands for Source Code Management.
 - **`cpsScm`**: Load a pipeline script from SCM.
-- **`lightweight`**: if selected, try to obtain the pipeline script content directly from sem without performing a full checkout false.
+- **`lightweight`**: if selected, try to obtain the pipeline script content directly from scm without performing a full checkout false.
