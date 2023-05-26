@@ -50,3 +50,21 @@ spec:
   imagePullSecrets:
   - name: regcred
 ```
+# Networking:
+- **ip link**: List and modify interfaces on the host.
+- **ip addr**: To see the ip addresses assigned to these interfaces.
+- **ip addr add 192.168.1.10/24 dev eth0**: set ip addresses on the interfaces.
+- **route\ip route**: is used to show the routing table.
+- **ip route add 192.268.1.0/24 via 192.168.2.1**: add new entry to the routing table
+- **cat /proc/sys/net/ipv4/ip_forward** this command is used to check if ip forwarding is enabled on the host. if set to 1 then it is enabled otherwise it is not.
+- **cat /etc/resolv.conf**: contains ip address of DNS server.
+- **cat /etc/hosts**: contains all dns entries on local machine. By default, it is this file that is refered to and if no result was found then it is the remote resolver that resolves the DNS.
+- **cat /etc/nsswitch.conf**: To override the default behavior that checks /etc/hosts and the /etc/resolv.conf.
+- **ip netns add red**: create a new network namespace.
+- **ip netns**: list network namespaces.
+- To connect two network interfaces we need to create a virtual cable or a pipe.
+- **ip link add veth-red type veth peer name verth-blue**: This create the link between veth-red and veth-blue and the next thing is to attach each veth to the appropriate ns.
+- **ip link set veth-red netns red**: attach the veth interface to the red network namespace.
+- **ip -n red addr add 192.168.15.1 dev veth-red** attach an ip address to the veth-red interface.
+- **ip -n red link set veth-red up**:
+![Linux Bridge](./../assets/veth_bridge.png)

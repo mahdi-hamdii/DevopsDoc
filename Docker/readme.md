@@ -1,5 +1,15 @@
+# Docker
+- **Container**: Docker container doesn't require the isntallation of a seperate operating system, Docker just relies on the kernel's resources.
+![Containers vs hypervisor](./../assets/container.png)
+# Docker Architecture:
+- Docker uses a client-server architecture. The Docker client talks to the docker daemon, which does the heavy lifting of building, and distributing your docker containers. The docker client and daemon can run on the same system or you can connect a docker client to a remote docker daemon. They communicate using REST API, over UNIX sockets or a network interface. Anoter Docker Client is `Docker compose`.
+- **Docker daemon**: listens for Docker API requests and manages Docker objects such as images, containers, networks and volumes. A daemon can also communicate with other daemons to manage Docker services.
+- **Docker client**: is the primary way that many Docker users interact with Docker. When we execute commands, the clients sends them to the daemon which carries them out. The client can communicate with more than one daemon.
+- **Docker registries**: stores Docker images.
+- **Container** is a runnable instance of an image. A container is defined by its image as well as any configuration options you provide to it when you create or start it.
+- When running a container, it uses an isolated filesystem. This custom filesystem is provided by a container image. Since the image contains the container's filesystem, it must contain everything needed to run an application (dependencies, configurations, scripts, binaries, etc). 
 # Best practices for writing Docker files
-- If you want to improve the build speed by excluding some files from the build-context, refer to exclude with `.dockerignore`.  
+- If you want to improve the busild speed by excluding some files from the build-context, refer to exclude with `.dockerignore`.  
 ## Build Context
 - If you attempt to build an image using Dockerfile from stdin without sending build context, then the build will fail if you use `COPY` or `ADD`.The following example illustrates this:
 ```conf
@@ -147,3 +157,12 @@ RUN pwd
 - If you don't explicitly set the user when starting the container, it will default to the user configured in the image, you can inspect the image to look this up. This is configured by the last USER line in the Dockerfile. it may also be configured by a parent image specified by the FROM line.
 - If neither the image, nor the run command specifies a user, docker defaults to `root`, `uid 0`.
 - By default, containers run as root. A container running as root has full control of the host system. It is dangerous to use root user so your image should specify `USER` instruction to specify `non-root` user for containers to run as.
+# Security Best Practices:
+- When building an image from Dockerfile, ensure that you use a minimal base image that matches your requirements. A smaller image not only offers portability and faster download but it also reduces the risk of vulnerabilities inroduced through dependencies.
+- **Multi-stage builds**: instead of images based on other images, multi stage allows you to pick your artifacts without inheriting vulnerabilities of base images on which you rely on.
+- When building your docker images consider the following best practices:
+    - Each container should only have one responsibility.
+    - Containers should be immultable, lightweight and fast.
+    - Avoid installing unecessary packages. This keeps the image clean and safe.
+- If you want have multiple images that have a lot in common, consider creating your own base image. 
+- To keep your production image lean but allow for debugging, consider using it as the base image for debug image. Additional testing and debugging tooling can be added on top of the production image.
