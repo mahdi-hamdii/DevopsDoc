@@ -288,8 +288,8 @@ MINS_TO_BYPASS_MFA=10
 - Table sampling is a convenient way to read a random subset of rows from a table. `SYSTEM/BLOCK` or `BERNOULLI/ROW`.
 ## File functions:
  ![File Functions](./../assets/filefunctions.png)
-- **Scoped file URL**: `build_scoped_file_url(stage_name, path_to_file)`. URL is valid for 24 Hours. The caller must have `USAGE` on External named stage or `READ` on internal named stage. If called in UDF, stored procedure or view does not require any privileges.
-- **Stage File URL** `build_stage_file_url(stage_name, path_to_file)`. URL never expires.
+- **Scoped file URL**: `build_scoped_file_url(stage_name, path_to_file)`. URL is valid for 24 Hours. The caller must have `USAGE` on External named stage or `READ` on internal named stage. If called in UDF, stored procedure or view does not require any privileges. Only the user that generated the scoped file url can download the file.
+- **Stage File URL** `build_stage_file_url(stage_name, path_to_file)`. URL never expires. Any role that has privileges on the underlying stage can access the file.
 - **Presigned URL**: `get_presigned_url(stage_name, path_to_file, expiration_time)`:The caller must have `USAGE` on External named stage or `READ` on internal named stage.
 ## Directory Tables:
 ```conf
@@ -301,4 +301,43 @@ DIRECTORY =  (ENABLE = TRUE)
 ```conf
 ALTER STAGE STAGE_NAME REFRESH;
 ```
-## FILE SUPPORT REST API
+## Micro partitions:
+- Snowflake partitions along the natural ordering of the input data as it is inserted/loaded.
+- Micro partitions are physical files stored in blob storage and range between 50mb-500mb of uncompressed data.
+- Micro partitions are immutable, they are write once read many.
+- Micro partitions metadata allows Snowflake to optimize a query by first checking the min-max metadata of a column and discarding micro-partitions that are not required from the query plan.
+## TIME TRAVEL
+- The default data retention time on account,  database, schema and table is 1 day. On the standard edition the minimum value 0 and the maximum retention time is 1 day. For enterprise and higher it's between 0 and 90 days.
+- Temporary and Transient tables can have a max retention period of 1 day across all editions
+![Access historical data](./../assets/access_historical_data.png)
+- **Fail-safe**: non configurable period of 7 days in which historical data can be recovered by contacting snowflake support. It could take several hours or days for snowflake to complete recovery.
+## cloning:
+- Users can clone:
+    - DATABASE
+    - Schemas
+    - TABLES
+    - STREAMS
+    - STAGES
+    - SEQUENCES
+    - FILE FORMATS
+    - TASKS
+    - PIPES (reference external stage only)
+- Cloning is a metadata only operation, copying the properties, structure and configuration of it's source.
+- **ZERO-COPY Cloning**: Changes made after the point of the cloning then start creating additional micro partitions.
+- External tables and internal named stages are never cloned.
+- Cloaned table does not contain the load history of the source table.
+## Replication:
+- Replication enables replicating databases between accounts in the same orgnization.
+- The secondary database can be periodically refreshed.
+- External tables, stages, pipes, streams and tasks are not currently replicated.
+- Only databases and some of their child objects can be replicated, not users, roles, warehouses, resource monitors or shares.
+![Storage Monitoring](./../assets/storage_monitoring.png)
+- **Secure Data Sharing**: allows an account to provide read only access to other accounts without transferring data.
+- An account can share the following objects: `Secure views`,`Secure materialized views` `Secure UDFS`, `Tables`, `External tables`.
+- Only one database can be added by share.
+- No hard limits on the number of shares you can create or the number of accounts you can add to your share.
+- A data consumer cannot use time travel on shared database objects.
+- A data consumer cannot create a clone of a shared database or database objects.
+- To create a database from a SHARE the user must have `IMPORT` Privilege granted
+- **DATA Provider**, **DATA Consumer** and **READER Account**: The reader account allows a non-snowflake customer to gain access to the providers data. 
+- **DATA EXCHANGE**: is a private version of the DATA MARKETPLACE for accounts to provide. A data exchange for snowflake account is set with snowflake support by providing a name and a description.
