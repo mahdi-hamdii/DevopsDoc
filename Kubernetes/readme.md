@@ -4,7 +4,8 @@
         -`periodSeconds`: specifies that the kubelet should perform a liveness or readiness proble each x seconds. 
         -`initialDelaySeconds`: tells the kubelet that it should wait x seconds before performing the first probe
         - `failureTreshold`: after a probe fails failureTreshold times in a row, kubernetes considers that the overall check has failed.
-        - for a failed readiness probe the kubelet continues running the container that failed the check and also continues to run more probes because the check failed(it sets ready condition of the pod to false). - for a failed liveness probe, if at least failuretreshold probes have failed, kubernetes treats the container as unhealthy and triggers a restart for that container into account.
+        - for a failed readiness probe the kubelet continues running the container that failed the check and also continues to run more probes because the check failed(it sets ready condition of the pod to false). 
+        - for a failed liveness probe, if at least failuretreshold probes have failed, kubernetes treats the container as unhealthy and triggers a restart for that container into account.
         - `successTreshold`: Minimum consecutive successes for the probe to be considered successful after having failed
         - `timeoutSeconds`: Number of seconds after which the probe timesout 
     - ## Resource limits and requests: 

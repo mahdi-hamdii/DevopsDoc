@@ -10,7 +10,7 @@
     - JobDSL plugin (groovy)
     - Job builder plugin (yaml)
     - Jenkins pipeline: Multi-branch, organizations folders
-- First the configuration as code plugin must be installed on the Jenkins Controller, if you do not see the Confi system configuration section of the Manage Jenkins page, you need to install the plugin
+- First the configuration as code plugin must be installed on the Jenkins Controller, if you do not see the system configuration section of the Manage Jenkins page, you need to install the plugin
 ```conf 
 jobs:
     - script: >
@@ -37,4 +37,4 @@ jobs:
 - **`pipelineJob`**: Creates or updates a pipeline job
 - **`SCM`**: SCM stands for Source Code Management.
 - **`cpsScm`**: Load a pipeline script from SCM.
-- **`lightweight`**: if selected, try to obtain the pipeline script content directly from sem without performing a full checkout false.
+- **`lightweight`**: if selected, try to obtain the pipeline script content directly from scm without performing a full checkout false.
