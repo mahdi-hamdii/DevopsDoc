@@ -275,3 +275,30 @@ MINS_TO_BYPASS_MFA=10
 <br>
 
 ## ESTIMATION FUNCTION TYPES
+- **Cardinality Estimation**: Estimates the number of distinct values.
+![cardinality](./../assets/cardinality_estimation.png)
+- **Similarity Estimation**: Estimates similarity between two or more sets.
+![Similarity1](./../assets/similarity1.png)
+![Similarity2](./../assets/similarity2.png)
+- **Frequency Estimation**: Estimate frequency of values in a set.
+![Frequency](./../assets/frequency.png)
+- **Percentile Estimation**: Estimate percentile of values in a set. Percentile is staistical method to express what percentage of a set of values is below a certain value.
+![Percentile](./../assets/percentile.png)
+## Table sampling:
+- Table sampling is a convenient way to read a random subset of rows from a table. `SYSTEM/BLOCK` or `BERNOULLI/ROW`.
+## File functions:
+ ![File Functions](./../assets/filefunctions.png)
+- **Scoped file URL**: `build_scoped_file_url(stage_name, path_to_file)`. URL is valid for 24 Hours. The caller must have `USAGE` on External named stage or `READ` on internal named stage. If called in UDF, stored procedure or view does not require any privileges.
+- **Stage File URL** `build_stage_file_url(stage_name, path_to_file)`. URL never expires.
+- **Presigned URL**: `get_presigned_url(stage_name, path_to_file, expiration_time)`:The caller must have `USAGE` on External named stage or `READ` on internal named stage.
+## Directory Tables:
+```conf
+CREATE STAGE INT_STAGE
+DIRECTORY =  (ENABLE = TRUE)
+```
+![Directory Table](./../assets/directory_table.png)
+- Directory tables must be refreshed to reflect the most up to date changes made to stage contents. This include new files being uploaded, removed files and changes to files in the path.
+```conf
+ALTER STAGE STAGE_NAME REFRESH;
+```
+## FILE SUPPORT REST API
