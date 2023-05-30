@@ -1,7 +1,10 @@
 # Docker
-- **Container**: Docker container doesn't require the isntallation of a seperate operating system, Docker just relies on the kernel's resources.
+- **Container**: Docker container doesn't require the installation of a seperate operating system, Docker just relies on the kernel's resources.
+<br>
 ![Containers vs hypervisor](./../assets/container.png)
+
 # Docker Architecture:
+
 - Docker uses a client-server architecture. The Docker client talks to the docker daemon, which does the heavy lifting of building, and distributing your docker containers. The docker client and daemon can run on the same system or you can connect a docker client to a remote docker daemon. They communicate using REST API, over UNIX sockets or a network interface. Anoter Docker Client is `Docker compose`.
 - **Docker daemon**: listens for Docker API requests and manages Docker objects such as images, containers, networks and volumes. A daemon can also communicate with other daemons to manage Docker services.
 - **Docker client**: is the primary way that many Docker users interact with Docker. When we execute commands, the clients sends them to the daemon which carries them out. The client can communicate with more than one daemon.
@@ -9,19 +12,40 @@
 - **Container** is a runnable instance of an image. A container is defined by its image as well as any configuration options you provide to it when you create or start it.
 - When running a container, it uses an isolated filesystem. This custom filesystem is provided by a container image. Since the image contains the container's filesystem, it must contain everything needed to run an application (dependencies, configurations, scripts, binaries, etc). 
 # Best practices for writing Docker files
-- If you want to improve the busild speed by excluding some files from the build-context, refer to exclude with `.dockerignore`.  
+- If you want to improve the build speed by excluding some files from the build-context, refer to exclude with `.dockerignore`.  
+- If you have frequently updated files (git history, test results, etc) in your working directory, the cache will be regenerated every time you run Docker build. Therefore, if you include the directory with such files in the context, each build will take a lot of time.
+- Before sending the Docker build context to the Docker daemon, in the root directory of the build context the CLI will exclude any files or directories from the context that matches the pattern written in the `.dockerignore` file.
+```conf
+target? #exclude files that are extended by one character (target1, target2)
+**/target # exclude specific filename in any directory
+*.md
+!readme.md # This will exclude all .md files except readme.md
+```
+- In .dockerignore all pathts must be relative to where the file is located.
+- Node.js example:
+
+```conf
+**/node_modules/
+**/dist
+.git
+npm-debug.log
+.coverage
+.coverage.*
+.env
+.aws
+```
 ## Build Context
 - If you attempt to build an image using Dockerfile from stdin without sending build context, then the build will fail if you use `COPY` or `ADD`.The following example illustrates this:
 ```conf
 # create a directory to work in
 
-mkdir examole ad example
+mkdir example
 
 # create an example file
 
-touch somefile. txt
+touch somefile.txt
 
-docker build -t myimage: latest -<<EOF
+docker build -t myimage:latest -<<EOF
 FROM busybox
 COPY somefile.txt ./
 RUN cat /somefile.txt
@@ -38,7 +62,7 @@ COPY failed: stat /var/lib/docker/tmp/docker-builder249218248/somefile.txt: no s
 docker build -t myimage: latest -f-
 . < <EOF
 FROM busybox
-COPY somefile. txt. 
+COPY somefile.txt . 
 EOF
 ```
 - using `-f`option to specify the Docker file to use, using a hyphen `-` as filename to instruct Docker to read Dockerfile from stdin as follows:
