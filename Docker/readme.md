@@ -1,6 +1,7 @@
 # Docker
 - **Container**: Docker container doesn't require the installation of a seperate operating system, Docker just relies on the kernel's resources.
 <br>
+
 ![Containers vs hypervisor](./../assets/container.png)
 
 # Docker Architecture:
@@ -119,7 +120,7 @@ CMD ["--help" ]
 ## Leverage Build Cache
 - Starting with a parent image that's already in the cache, the next instruction compared against all child images derived from the base image to see if one of them was built using the exact same instruction. If not, the cache is invalidated.
 - In most cases, simply comparing the instruction in the dockerfile with one of the child images is sufficient. However, certain instructions require more examination and explanation.
-- For `ADD` and `COPY` instructions, the contents of each file in the image are examined and a `checksum` is calculated for each file. The last-modified and last-accessed times of each file aren't considered in these checksums. During the cache lookup, the checksum is compared against the checksum in the existing images.If anything has changed in any file, such as the contents and its metadata, then the cache is invalidated.
+- For `ADD` and `COPY` instructions, the contents of each file in the image are examined and a `checksum` is calculated for each file. The `last-modified` and `last-accessed` times of each file aren't considered in these checksums. During the cache lookup, the checksum is compared against the checksum in the existing images.If anything has changed in any file, such as the contents and its metadata, then the cache is invalidated.
 - Aside from the `ADD` and `COPY` commands, cache checking doesn't look at the files in the container to determine a cache match. For Example, when processing `Run apt-get -y update` command the files updated in the container aren't examinated to determine if a cache hit exists. In that case just the command string itself is used to find a match.
 ```conf
 # syntax=docker/dockerfile:1
