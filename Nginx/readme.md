@@ -40,3 +40,34 @@ return 307 /fruits; # this will redirect to /fruits
 rewrite ^/number/(\w+) /count/$1;
 }
 ```
+# Configure NGINX to serve PHP static websites
+- Request URI should be sent to index.php as argument.
+```conf
+server {
+        root /var/www/html/sunny-skies-terrace;
+        index index.php index.html index.htm;
+        server_name sunnyskiesterrace.eyeondev2.com;
+
+   location / {
+       try_files $uri $uri/ /index.php?slug=$uri;
+   }
+
+  location ~ \.php$ {
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass unix:/var/run/php-fpm/www.sock;
+            fastcgi_index index.php;
+            include fastcgi.conf;
+    }
+
+
+
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/sunnyskiesterrace.eyeondev2.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/sunnyskiesterrace.eyeondev2.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+```
