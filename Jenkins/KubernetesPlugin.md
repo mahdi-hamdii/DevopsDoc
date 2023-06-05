@@ -1,3 +1,8 @@
+- Pod template, on a le inherit from jenkins-inbound-agent, qui est une configuration YAML du pod qu'on va creé.
+dans ce template on trouve un autre container qui est le jnlp (java network launch protocol), ce container assure la communication entre l'agent et le controlleur.
+- le jnlp permet de faire un remote exec dans le Jenkins controller pour executer des fonctionialiter qui se trouve dans le controller et par la suite on recupere les resultat graçe au jnlp
+- dans notre cas on utlise le websocket
+
 # Jenkins Kubernetes Plugin:
 1. Developer triggers build by pushing code to git.
 2. Jenkins master tells the kubernetes cluster to give him an agent running
@@ -65,7 +70,3 @@ withCredentials([[$class:'DockerServerCredentialsBinding', credentialsId: "crede
 - **JNLP**: `JAVA NETWORK LAUNCH PROTOCOL` is used to connect launch your java application (here jenkins) from a remote location. 
 - JNLP image is for jenkins agents using TCP or WebSockets to establish inbound connection to the Jenkins master. This agent is powered by The jenkins remoting library
 - **JAVA WEB START or JNLP**: it was designed for the sole purpose of automatically starting java applications from a remote location.  JAVA would attempt to reach out to the host described in the XML structure. Download the specified JAR package and if successful execute it.
-
-**Pod template, on a le inherit from jenkins-inbound-agent, qui est une configuration YAML du pod qu'on va creé.
-dans ce template on trouve un autre container qui est le jnlp (java network launch protocol), ce container assure la communication entre l'agent et le controlleur.
-le jnlp permet de faire un remote exec dans le Jenkins controller pour executer des fonctionialiter qui se trouve dans le controller et par la suite on recupere les resultat graçe au jnlp**
