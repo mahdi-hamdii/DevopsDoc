@@ -6,7 +6,7 @@
 
 # Docker Architecture:
 
-- Docker uses a client-server architecture. The Docker client talks to the docker daemon, which does the heavy lifting of building, and distributing your docker containers. The docker client and daemon can run on the same system or you can connect a docker client to a remote docker daemon. They communicate using REST API, over UNIX sockets or a network interface. Anoter Docker Client is `Docker compose`.
+- Docker uses a client-server architecture. The Docker client talks to the docker daemon, which does the heavy lifting of building, and distributing your docker containers. The docker client and daemon can run on the same system or you can connect a docker client to a remote docker daemon. They communicate using REST API, over UNIX sockets or a network interface. Another Docker Client is `Docker compose`.
 - **Docker daemon**: listens for Docker API requests and manages Docker objects such as images, containers, networks and volumes. A daemon can also communicate with other daemons to manage Docker services.
 - **Docker client**: is the primary way that many Docker users interact with Docker. When we execute commands, the clients sends them to the daemon which carries them out. The client can communicate with more than one daemon.
 - **Docker registries**: stores Docker images.

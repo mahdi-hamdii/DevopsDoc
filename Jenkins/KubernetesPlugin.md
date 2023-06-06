@@ -1,3 +1,8 @@
+- Pod template, on a le inherit from jenkins-inbound-agent, qui est une configuration YAML du pod qu'on va creé.
+dans ce template on trouve un autre container qui est le jnlp (java network launch protocol), ce container assure la communication entre l'agent et le controlleur.
+- le jnlp permet de faire un remote exec dans le Jenkins controller pour executer des fonctionialiter qui se trouve dans le controller et par la suite on recupere les resultat graçe au jnlp
+- dans notre cas on utlise le websocket
+
 # Jenkins Kubernetes Plugin:
 1. Developer triggers build by pushing code to git.
 2. Jenkins master tells the kubernetes cluster to give him an agent running
