@@ -5,7 +5,8 @@
 4. When the Job is done it will delete the pod and free resources.
 - Jenkinsfile is a text file that contains the definition of a Jenkins Pipeline and is checked into source control.
 - `PodTemplate`: defines an ephemeral pod template. it is created while the pipeline execution is within
-The following idiom creates a pod template with a generated unique label available as `POD_LABEL` and runs commands inside it. node (POD_LABEL)*: Jenkins will search for a pod with the specified label, if not found then it will create a new pod with a unique label in which it will execute the steps.
+The following idiom creates a pod template with a generated unique label available as `POD_LABEL` and runs commands inside it. 
+- `node (POD_LABEL)`: Jenkins will search for a pod with the specified label, if not found then it will create a new pod with a unique label in which it will execute the steps.
 ```conf
 podTemplate(...){
     node (POD_LABEL) {
@@ -53,13 +54,11 @@ withCredentials([[$class:'DockerServerCredentialsBinding', credentialsId: "crede
 ```
 - `withEnv`: sets one or more environment variables within a block. The names of the environment variable are case insensitive but case-preserving. Setting Foo will change the value of FOO if it already exist.
 
-- `DOCKER_TLS_VERIFY=1`: tells the `docker client` whether to communicate with the `docker daemon dockerd` with any TLS verificatio to 1, the server needs to have a private CA signed key pair, and the client also need to have a key pair signed by the same CA. th tells the client to verify that server key it receives is signed by the private CA. The daemon/server will have a similar setting client certificates.
+- `DOCKER_TLS_VERIFY=1`: tells the `docker client` whether to communicate with the `docker daemon dockerd` with any TLS verificatio to 1, the server needs to have a private CA signed key pair, and the client also need to have a key pair signed by the same CA. It tells the client to verify that server key it receives is signed by the private CA. The daemon/server will have a similar setting client certificates.
 - If `DOCKER_TLS_VERIFY` is set to anything other than 1, the docker client will not verify the registry's TLS certificate, which the connection vulnerable to man-in-middle attacks and other security risks.
 - `DockerServerCredentialsBinding`: class in a jenkinsfile is used to bind docker server credentials in a variable in the build ent
-- In the `withCredentials` block, the `class` parameter specifies the type of credential binding to be used. In our case the crede being bound to the "DOCKER_CERT _PATH' environment variable, this allows the build to authenticate with a Docker Registery or Docker using the provided credentials. Behind the scenes, the `DockerServerCredentialsBinding` class leverages the docker java api to comm with the Docker Daemon and authenticate using the provided credentials.
+- In the `withCredentials` block, the `class` parameter specifies the type of credential binding to be used. In our case the credentials being bound to the "DOCKER_CERT _PATH' environment variable, this allows the build to authenticate with a Docker Registery or Docker using the provided credentials. Behind the scenes, the `DockerServerCredentialsBinding` class leverages the docker java api to comm with the Docker Daemon and authenticate using the provided credentials.
 - Overall, `DockerServerCredentialsBinding` class provides a secure and convenient way to authenticate and communicate with a Docker during a jenkins build.
-- **Freestyle jobs**: With Freestyle jobs you cannot configure your kubernetes pod per job. you're limited to the global pod templates you've configured.
-- **Pipeline jobs**: Pipeline jobs provide additional flexibility, allowing you to define the pod template in the job itself, allowing for much more flexibility (including running multiple containers in a pod )
 # JNLP:
 - **Jenkins Remoting**: is a library, and executable java archive, which implements the communication layer in Jenkins. This includes the TCP-based communication protocols, remote procedure calls, class loading, data streaming, etc. Currently remoting is primarly used in communications between the jenkins Controller and the jenkins agents.
 - **JNLP**: `JAVA NETWORK LAUNCH PROTOCOL` is used to connect launch your java application (here jenkins) from a remote location. 

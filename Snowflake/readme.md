@@ -288,9 +288,11 @@ MINS_TO_BYPASS_MFA=10
 - Table sampling is a convenient way to read a random subset of rows from a table. `SYSTEM/BLOCK` or `BERNOULLI/ROW`.
 ## File functions:
  ![File Functions](./../assets/filefunctions.png)
-- **Scoped file URL**: `build_scoped_file_url(stage_name, path_to_file)`. URL is valid for 24 Hours. The caller must have `USAGE` on External named stage or `READ` on internal named stage. If called in UDF, stored procedure or view does not require any privileges. Only the user that generated the scoped file url can download the file.
-- **Stage File URL** `build_stage_file_url(stage_name, path_to_file)`. URL never expires. Any role that has privileges on the underlying stage can access the file.
-- **Presigned URL**: `get_presigned_url(stage_name, path_to_file, expiration_time)`:The caller must have `USAGE` on External named stage or `READ` on internal named stage.
+- **Scoped file URL**: `build_scoped_file_url(stage_name, path_to_file)`. URL is valid for 24 Hours. The caller must have `USAGE` on External named stage or `READ` on internal named stage. If called in UDF, stored procedure or view does not require any privileges. Only the user that generated the scoped file url can download the file. Ideal for use in custom applications providing unstructured data to other accounts via a SHARE or for downloading and ad hoc analysis of unstructured data via SnowSight.
+- **Stage File URL** `build_stage_file_url(stage_name, path_to_file)`. URL never expires. Any role that has privileges on the underlying stage can access the file. Ideal for custom applications that require access to unstructured data files.
+- **Presigned URL**: `get_presigned_url(stage_name, path_to_file, expiration_time)`:The caller must have `USAGE` on External named stage or `READ` on internal named stage. Ideal for Business Intelligence applications or reporting tools that need to display the unstructured file contents.
+- `GET_STAGE_LOCATION(stage_name)`: retrieves the URL for an external or internal named stage using the stage name as input.
+- `GET_RELATIVE_PATH(stage_name, absolute_path)`: extracts the path of a staged file relative to its location in the stage using the stage name and absolute file path in cloud storage as inputs.
 ## Directory Tables:
 ```conf
 CREATE STAGE INT_STAGE
@@ -341,3 +343,94 @@ ALTER STAGE STAGE_NAME REFRESH;
 - To create a database from a SHARE the user must have `IMPORT` Privilege granted
 - **DATA Provider**, **DATA Consumer** and **READER Account**: The reader account allows a non-snowflake customer to gain access to the providers data. 
 - **DATA EXCHANGE**: is a private version of the DATA MARKETPLACE for accounts to provide. A data exchange for snowflake account is set with snowflake support by providing a name and a description.
+
+<br>
+
+## ACCOUNT USAGE & INFORMATION SCHEMA:
+
+- **INFORMATION_SCHEMA**: can be used to find out about storage, compute and objects in a snowflake account.
+
+- Warehouse performance can be evaluated by querying the `Account Usage` `Query History` view.
+
+- **User access history** can be found by querying the `Account usage` `ACCESS_HISTORY` view. This view can be used to query snowflake query history by various dimensions (ime range, session, user, warehouse etc) within the last 365 days.
+
+- **Snowflake History Page**: allows you to view the details of all the queries executed in the last 14 days. You can query `QUERY_HISTORY` view in snowflake's `ACCOUNT USAGE` schema for older queries.
+
+<br>
+
+## DATA LOADING AND UNLOADING:
+
+- `ENFORCE_LENGTH` option for COPY INTO: If `TRUE`, the COPY statement produces an error if a loaded string exceeds the target column length. if `FALSE`, strings are automatically truncated to the target column length.
+- `TRUNCATECOLUMNS`: if `TRUE`, strings are automatically truncated to the target column length. If `FALSE`, the COPY statement produces an error if a loaded string exceeds the target column length.
+- `OUTER => FALSE`: argument with `FLATTEN` omits the output of the input rows that cannot be expanded, either because they cannot be accessed in the path or because they have zero fields or entries.
+- `OUTER => TRUE`: argument with `FLATTEN` generates exactly one row for zero-row expansions (with NULL in the KEY, INDEX and VALUE columns). `RECURSIVE` is used to instruct if only the element referenced by `PATH` is expanded or expansion is performed for all sub-elements recursively MODE specifies whether only objects, arrays or both should be flattened.
+- The preferred way to distinguish empty strings from null values while unloading in CSV files is to Encolse strings in quotes by setting the `FIELD_OPTIONALLY_ENCLOSED_BY`option.
+- All outputs are encoded using `UTF_8` character set. No other character sets are supported. 
+- snowflake supports transforming data while loading it into a table using the COPY command. options include:
+    - Column omission
+    - Column reordering
+    - Casting
+    - Truncating text strings that exceed te target column length
+- `VALIDATION_MODE`: parameter in the COPY INTO command instructs the command to validate the data files instead of loading them into the specified table. This means the COPY command will test the files for errors, but not actually load them:
+    - `RETURN_<n>_ROWS`: validates the specified number of rows and fails at the first error encountred if any, otherwise the validation continues without error.
+    - `RETURN_ERRORS`: returns all errors across all specified files, including parsing and conversion errors.
+    - `RETURN_ALL_ERRORS`: returns all errors across all specified files, including errors that were partially loaded during a previous load with `ON_ERROR` option set to `CONTINUE`.
+    - Validation MODE parameter does not support COPY statements that transform data during load.
+- Compression methods supported by Snowflake: `bzip2`, `gzip`, `raw_deflate`, `deflate`, `Zstandard` and `brotli`. Snowflake automatically detect any of these compression methods except for `Brotli` and `Zstandard`.
+- Automatic refresh of metadata of the directory table in the cloud storage does incure charges to Snowflake customers. Snowflake charges 0.06 credits per 1000 event notification received.
+- XS sized warehouse can load eight files parallely. S sized can load 16 files parallely etc.
+- `OBJECT_CONSTRUCT`: function can be used in combination with the COPY command to convert rows in a relational table to a single VARIANT colimn and unload the rows into a file.
+- JAVA UDF and tabular JAVA UDF can read and process unstructured data in staged files using either the SnowflakeFile class or the InputStream class in the UDF Code (It is not possible for Python UDF).
+- `SYSTEM|BLOCK` sampling is often faster than `BERNOULLI|ROW` sampling. Also, `BERNOULLI|ROW` method is good for Smaller tables and `SYSTEM|BLOCK` method for larger tables.
+- Supported Auth methods for REST API are `OAuth` and `Key Pair Authentification`.
+- `PURGE = TRUE`: COPY option to delete the file from the snowflake stage when data from staged files are loaded successfully.
+- `AUTO_INGEST=TRUE`: enables automatic data loading, snowpipe supports loading from external stages. `AUTO_INGEST=FALSE` disable automatic data loading. You must make calls to the Snowpipe REST API endpoints to load data files.
+## Exams:
+- **AWS PrivateLink**: is an AWS service for creating private VPC endpoints that allow direct, secure connectivity between your AWS VPCs and the snowflake VPC without traversing the public internet. The connecitivty is for AWS VPCs in the same AWS region.
+
+- The suspended warehouse can be resized.
+
+- After a specified period of time (defined by Idp), a user's session in the idp automatically times out, but this does not affect their snowflake sessions. 
+
+- **Explain plan**: gives us insights on `partition pruning`, `join ordering` and `join types`. The explain plan is a useful tool for determining the efficency of your query. It's a command that compiles your query to figure out all the steps snowflake would have to work through if it were actually to run the query.
+
+- If a policy is assigned to a user who is already logged in the user can't do anything else until signed out and signed back in again. 
+
+- Data spilling can be decreased by:
+    - Reducing the amount of data processed( improve parition pruning, projecting only the columns needed)
+    - Decreasing the number of parallel queries running in the warehouse.
+    - Trying to split the processing into several steps 
+    - Using larger warehouse.
+
+- For creating a network policy the parameters that are required are `Policy Name` and `Allowed IP addresses`.
+
+- **Security Admin**: is granted the `MANAGE GRANTS` security privilege to be able to modify any grant inculding revoking it. It can manage any object grant globally, as well as create, monitor and manage users and roles.
+
+- **What is the best way to analyze the optimum warehouse size?**: Execute relatively homogeneous queries (size, complexity, data sets, etc) on the same warehouse; executing queries of widely varying size and/or complexity on the same warehouse makes it more difficult to analyze warehouse load, which can make it more difficult to select the best size to match.
+
+- **Major Benefits of clustering keys**: Help improve query performance and help optimize table maintenance.
+
+- **Temporary tables, External Tables, Stages, Temporary Stages, Streams and Tasks do not get replicated**
+
+- Federated Authentification is supported by all Snowflake editions.
+
+- **SHOW PARAMETER** is the command used to determine whether a network policy is set on the account or for a specific user.
+```conf
+SHOW PARAMETERS LIKE 'network_policy' IN ACCOUNT;
+SHOW PARAMETERS LIKE 'network_policy' IN USER username;
+```
+
+- A user's default role is the role a user gets set to each time the user logs in to Snowflake.
+
+- Not all predicate expressions can be used to prune. Snowflake does not prune micro-partitions based on a predicate with a subquery, even if the subquery results in a constant.
+
+- ACCOUNT ADMIN role (or role granted the CREATE ACCOUNT global privilege) only can create the `Reader Account`.
+
+- A DBA_ROLE created a database. Later the DBA_ROLE was dropped. Who will own the database now, which was created by the DBA_ROLE? -> The role that dropped the DBA_ROLE will own the database.
+
+- **Okta and Microsoft ADFS** provide native snowflake suppot for federated authentification and SSO.
+
+- A row access policy uses `Conditional expression functions` and `context functions` to determine which rows should be visible in a given context. Context Functions such as `CURRENT_USER()`, `CURRENT_ROLE()` `CURRENT_ACCOUNT().`
+
+- Snowflake does not begin executing SQL statements submitted to a warehouse until all of the compute resources for the warehouse are successfully provisioned, unless any of the resources fail to provision: If any of the compute resources for the warehouse fail to provision during start-up, Snowflake attempts to repair the failed resources. During the repair process, the warehouse starts processing SQL statements once 50% or more of the requested compute resources are successfully provisioned.
+- If cache does fill up, it's flushed out in **`Least recetly used fashion LRU`**

@@ -24,3 +24,5 @@ Declarative and Scripted Pipelines are constructed fundamentally differently. De
 is designed to make writing and reading Pipeline code easier.
 
 Many of the individual syntactical components (or "steps") written into a Jenkinsfile, however, are common to both Declarative and Scripted Pipeline.
+- **Freestyle jobs**: With Freestyle jobs you cannot configure your kubernetes pod per job. you're limited to the global pod templates you've configured.
+- **Pipeline jobs**: Pipeline jobs provide additional flexibility, allowing you to define the pod template in the job itself, allowing for much more flexibility (including running multiple containers in a pod )

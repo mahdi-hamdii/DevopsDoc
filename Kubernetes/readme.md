@@ -1,5 +1,5 @@
 # Deployment manifest:
-- A deployment rollout is triggered if and only if the deployment's pod template is changed, for examle if the labels or container images of the template are updated. Updates such as scaling the deployment, do not trigger a rollout. When we update the deployment, The deployment update the pods by creating a new replicaset and scaling it up and scaling the old replicaset. 
+- A deployment rollout is triggered if and only if the deployment's pod template is changed, for example if the labels or container images of the template are updated. Updates such as scaling the deployment, do not trigger a rollout. When we update the deployment, The deployment update the pods by creating a new replicaset and scaling it up and scaling the old replicaset. 
     - ## Liveness and Readiness Probes: - 
         -`periodSeconds`: specifies that the kubelet should perform a liveness or readiness proble each x seconds. 
         -`initialDelaySeconds`: tells the kubelet that it should wait x seconds before performing the first probe

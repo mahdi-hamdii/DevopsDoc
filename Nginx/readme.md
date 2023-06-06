@@ -3,11 +3,11 @@
 - When Nginx is the one that Gets the requests and forwards them to the server and then serves back the response: this is knwon as 'reverse proxy 
 - NGINX can act as a load balancer 
 ## Configure NGINX:
-- When you install nginx what it will is it creates a directory under 'usr/local/etc/nginx. and if you open it up you will se a bunch of different files
--nginx.conf- : Is the configuration file for configuring nginx the reverse proxy
-- Key value pairs are known as 'directives'
-- Block of codes inside curly brackets are known as 'context' 
-- The 'mime.types' file contains all the types to be served(Header: 'content-type': text/css) and to add it to your server you need to add the include mime.types-12 
+- When you install nginx what it will is it creates a directory under 'usr/local/etc/nginx. and if you open it up you will see a bunch of different files
+- `nginx.conf` : Is the configuration file for configuring nginx the reverse proxy
+- Key value pairs are known as `directives`
+- Block of codes inside curly brackets are known as `context` 
+- The `mime.types` file contains all the types to be served(Header: `content-type`: text/css) and to add it to your server you need to add the `include mime.types`
 - inside the Server context we have:
  ```conf
  server { 
