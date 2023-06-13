@@ -23,3 +23,40 @@
     - **dag_dir_list_interval**: How often in seconds to scan directory for new files. Default to 5 minutes 
 - Configuring the web server:
     - **worker_refresh_interval**: Number of seconds to wait before refreshing a batch of workers. default to 30 seconds.
+# Airflow CLI commands:
+- `airflow init db`: this initializes the metastore.
+- `airflow db reset`: delete all metadata from the metastore.
+- `airflow webserver`: runs the webserver of airflow
+- `airflow scheduler`: runs airflow scheduler
+- `airflow celery worker`: this command allows you to declare a machine as airflow worker
+- `airflow dags list`: list dags
+- `airflow dags trigger example_operator`
+- `airflow tasks test dag_id task_id execution_date`: verify if your tasks work without checking its dependencies.
+## What is a Dag?
+```python
+from airflow import DAG
+from datetime import datetime, timedelta
+default_args={ //these arguments are for your task
+    "owner": "airflow",
+    "email_on_failure":False,
+    "email_on_retry": False,
+    "email": "admin@localhost.com"
+    "retries":1 //if a task fails then it will retry one time
+    "retry_delay": timedelta(minutes=5) //wait 5 mins before retry
+}
+with DAG("dag_id", start_date=datetime(2021, 1, 1), schedule_interval="@daily", default_args=default_args, catchup=False) as dag:
+//catchup will prevent running all the previous dag runs between the current date and the start date
+```
+## What is an Operator?
+- `Operator = Task`:
+- `Action Operator`: Allow you to execute something.
+- `Transfer Operator`: Transfer data from source to destination.
+- `Sensor Operator`: Allow you to wait for something to happen before moving to the next task.
+## Airflow Practice:
+- `airflow_plugins_folder`: refers to the directory where custom plugins can be placed. Plugins in Airflow provide additional functionalities and extend the core features of the platform. This folder is where you can store Python modules or packages that define custom operators, sensors, hooks, macros or other components to enhance the capabilities of your Airflow environment.
+- `airflow_dags_folder`: refers to the directory where you can store your DAG files. DAGs are Python scripts that define the workflows and tasks to be executed by airflow. AIRFLOW monitors this folder for any changes and automatically detects and loads the new or modified DAG files.
+```bash
+airflow tasks test dag_id task_id execution_date(2021-01-01)
+# Testing that the task work without storing any metadata in the metadatastore
+
+```
