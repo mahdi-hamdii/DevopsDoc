@@ -60,3 +60,59 @@ airflow tasks test dag_id task_id execution_date(2021-01-01)
 # Testing that the task work without storing any metadata in the metadatastore
 
 ```
+- In order to create dependencies between tasks you have to use `set_downstream` and set_upstream(methods):
+```python
+task1.set_downstream(task2) # This will execute task1 and then task2
+task2.set_upstream(task1)#This is exactly the same as the above
+>> equivalent to set_downstream
+<< equivalent to set_upstream
+#In order to create dependencies with them it is as follows
+task1 >> task2 >> task3 >> task4
+```
+- `.airflowignore`: as a best practice always put a .airflowignore file in your DAGs folder. it specifies the directories or files in the DAGs folder that Airflow should ignore.
+- If you want to see the logs for your dag run you should exec into the airflow docker and then cd into `/logs/scheduler` in which you will find for each day a folder and the folder latest with the latest date. 
+## START DATE & SCHEDULE INTERVAL:
+- `execution_date`
+- `start_date`: can be set to a value in the past or future. If you set it to the futur the scheduler will wait for that date to come. If you set it to the past it will execute all the previous runs unless you specify the option `catchup: false`.
+![Execution date](./../assets/airflow/execution_date.png)
+- `scheduling_interval`: can be Cron expressions(0 * * * *) or Timedelta objects (datetime.timedelta(days=1)). As a best practice you should use cron expressions rather than timedelta objects as specified in the documentation.
+![Cron expressions](./../assets/airflow/cron_expression.png)
+- `end_date`: the date at which your DAG/Task should stop being scheduled. Set to None by default.
+```bash
+airflow backfill -s 2023-01-20 -e 2023-01-25 --rerun_failed_tasks -B backfill
+#-s specify the start date and the end date that you want to 
+# --rerun_failed_tasks  allows you to rerun all failed tasks for the backfill date interval instead of raising expressions
+# -B backfill it allows to run in backward meaning from recent dagruns to least recent.
+```
+## Timezone in Python:
+- Python datetime.datetime objects with tzinfo attribute set: `Datetime aware`
+- Python datetime.datetime objects without tzinfo attribute set: `Datetime naive` 
+-> interpretation of naive datetime objects is bad
+- Datetime information is stored in `UTC`.
+- User interface always shows in datetime in UTC.
+- Airflow uses the `pendulum` python library to deal with time zones.
+![Pendulum](./../assets/airflow/timezone_aware.png)
+## Create Dependencies on previous dagRuns:
+- `depends_on_past`: defined at task level. If a previous task instance failed, the current task is not executed. Consequently the current task has no status. Only first task instance with start_date allowed to run.
+- `wait_for_downstream`: Defined at task level or at the dag level in the default_args. An instance of task X will wait for tasks immediatly downstream of the previous instance of task x to finish successfully before it runs.
+![Wait For Downstream](./../assets/airflow/wait_for_downstream.png)
+## Webserver architecture:
+![Webserver Architecture](./../assets/airflow/web_server_archi.png)
+nb_workers = 2 *nb_cores + 1
+## Dag Failure Detection:
+- When you instantiate a dag you can specify all this parameters in order to check the execution of your dag run:
+    - `dagrun_timeout`: how longer dagrun should be on before timeout so that new dagruns can be triggered.
+    - `sla_miss_callback`: allows to call a function when reporting sla timeouts
+    - `on_failure_callback`: call function when dagrun fails
+    - `on_success_callback`: call function when dagrun succceeds
+![Task Failure Detection](./../assets/airflow/task_failure_detection.png)
+## Test you DAGs:
+- `pytest`: testing framework that allow to create test suites.
+- There are five categories of test for a DAG:
+    - `DAG validation Tests`: check if valid (verify typos, contain cycles, check default args, high level of testing of DAGs -> it avoids having the message box on the UI telling you that your dag is broken)
+    - `DAG/pipeline Definition Tests`: check total number of tasks, nature of tasks check the upstream and downstream dependencies of tasks.
+    - `Unit tests`: check the logic
+    - `Integration Tests`: test if tasks work well with each others using a subset of production data. check if tasks can exchange data, check the input of tasks, check the dependencies between multiple tasks.
+    - `End to End pipeline tests`:check if the output is correct, check the full logic and performance. 
+![Different environments](./../assets/airflow/different_envs.png)
+![Env git branch](./../assets/airflow/env_git_branches.png)
