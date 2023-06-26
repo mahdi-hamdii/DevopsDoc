@@ -71,6 +71,11 @@ task1 >> task2 >> task3 >> task4
 ```
 - `.airflowignore`: as a best practice always put a .airflowignore file in your DAGs folder. it specifies the directories or files in the DAGs folder that Airflow should ignore.
 - If you want to see the logs for your dag run you should exec into the airflow docker and then cd into `/logs/scheduler` in which you will find for each day a folder and the folder latest with the latest date. 
+- `airflow run`: run a single task instance.
+- `airflow list_dags`: list all dags.
+- `airflow dag_state`: get the status of a DAG run.
+- `airflow task_state`: Get the status of a Task instance.
+- `airflow test`: Test a task instance without checking for dependencies or recording its state in the db.
 ## START DATE & SCHEDULE INTERVAL:
 - `execution_date`
 - `start_date`: can be set to a value in the past or future. If you set it to the futur the scheduler will wait for that date to come. If you set it to the past it will execute all the previous runs unless you specify the option `catchup: false`.
@@ -116,3 +121,50 @@ nb_workers = 2 *nb_cores + 1
     - `End to End pipeline tests`:check if the output is correct, check the full logic and performance. 
 ![Different environments](./../assets/airflow/different_envs.png)
 ![Env git branch](./../assets/airflow/env_git_branches.png)
+## Branching:
+- When designing your data pipelines, you may encounter use cases that require more complex task flows than Task A > Task B > Task C. For example, you may have use case where you need to decide between multiple tasks to execute based on the results of an upstream task. Or you may have a case where part of your pipeline should only run under certain external conditions. Fortunately, Airflow has multiple options for building `conditional logic` and or `branching` in your DAGs.
+- **`@task.branch`, `BranchPythonOperator`**: One of the simplest ways to implement branching in Airflow is to use `@task.branch` decorator which is a decorated version of `BranchPythonOperator`. This decorator accepts any python function as input as long as the function returns a list of valid IDs for Airflow tasks that the DAG should run after the functions completes.
+```Python
+result = 1
+@task.branch
+def choose_branch(result):
+    if result > 0.5:
+        return ['task_a', 'task_b']
+    return ['task_c']
+
+choose_branch(result)
+```
+![Branching](./../assets/airflow/branching.png)
+- Note that with the `@task.branch` decorator, your Python function must return at least one task ID for whichever branch is chosen (i.e. it can't return nothing). If one of the paths in your branching should do nothing, you can use an EmptyOperator in that branch.
+- **`@task.short_circuit`, `ShorCircuitOperator`**: This operator takes a python function that returns True or False based on logic implemented for your use case. If True is returned DAG continues, and if False is returned, all downstream tasks are skipped.
+- `@task.short_circuit` is useful when you know that some tasks in your DAG should run only occasionnally. For example, maybe your DAG runs daily, but some tasks should only run on sundays.
+```Python
+
+@dag(
+    start_date=datetime(2023, 1, 1),
+    schedule="@daily",
+    catchup=False,
+)
+def short_circuit_operator_decorator_example():
+
+    @task.short_circuit
+    def condition_is_True():
+        return True
+
+    @task.short_circuit
+    def condition_is_False():
+        return False
+
+    ds_true = [EmptyOperator(task_id='true_' + str(i)) for i in [1, 2]]
+    ds_false = [EmptyOperator(task_id='false_' + str(i)) for i in [1, 2]]
+
+    chain(condition_is_True(), *ds_true)
+    chain(condition_is_False(), *ds_false)
+
+
+short_circuit_operator_decorator_example()
+```
+![Short Circuit](./../assets/airflow/short_circuit.png)
+
+## Trigger rules for your tasks:
+
