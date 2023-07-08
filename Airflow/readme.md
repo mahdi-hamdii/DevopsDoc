@@ -168,3 +168,12 @@ short_circuit_operator_decorator_example()
 
 ## Trigger rules for your tasks:
 
+## Best Practices:
+![Scheduler Loop](./../assets/airflow/scheduler_loop.png)
+- Airflow workflows are defined in python and the scheduler has to parse them and by parse it strictly like executing all the top file code in the python file (imports and top level functions). Spins up a new process to do the parse DAGs so the faster the import the more performent the scheduler loop will be. 
+- `TOP Level code is what will run all the time` and it a very bad practice that is why we need to change the imports to local imports inside the tasks which will trigger them only when tasks are executed which means it is moved down from the scheduler to the worker.
+![Jinja Best Practice](./../assets/airflow/jinja_bestpractice.png)
+- Below you will see the results of DAG Processing with Best practices applied:
+![Run Time Comparison](./../assets/airflow/dag_run_time.png  )
+- Because code at the top level like `import numpy as np` and `defined global funcations` are getting imported each time in that infinite loop that schedulers launches to refresh DAG dir.
+-
