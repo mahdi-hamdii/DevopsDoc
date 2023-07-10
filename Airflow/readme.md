@@ -176,4 +176,5 @@ short_circuit_operator_decorator_example()
 - Below you will see the results of DAG Processing with Best practices applied:
 ![Run Time Comparison](./../assets/airflow/dag_run_time.png  )
 - Because code at the top level like `import numpy as np` and `defined global funcations` are getting imported each time in that infinite loop that schedulers launches to refresh DAG dir.
--
+- What inefficient DAGs actually cost -60 sec processing time?:
+    - Let's say we are running 350 hourly DAGs, 10 tasks per DAG with an estimated time of 60 sec + 60 sec processing time then we will have a cost increase of 50% (for AWS the cost will increase from 633.6$ to 950.4$)
