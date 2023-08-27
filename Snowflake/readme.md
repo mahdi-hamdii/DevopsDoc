@@ -434,3 +434,25 @@ SHOW PARAMETERS LIKE 'network_policy' IN USER username;
 
 - Snowflake does not begin executing SQL statements submitted to a warehouse until all of the compute resources for the warehouse are successfully provisioned, unless any of the resources fail to provision: If any of the compute resources for the warehouse fail to provision during start-up, Snowflake attempts to repair the failed resources. During the repair process, the warehouse starts processing SQL statements once 50% or more of the requested compute resources are successfully provisioned.
 - If cache does fill up, it's flushed out in **`Least recetly used fashion LRU`**
+
+
+
+**Questions**:
+- Explain Plan Snowflake
+- All files stored in internal stages for data loading and unloading are encrypted using AES-256 strong encryption
+- What will happen if a policy is assigned to a user who is already signed in?
+- Which role can create the account reader account?
+- a DBA_ROLE created a database. Later the DBA_ROLE was dropped. Who will own the database now, which was created by the DBA_ROLE?
+- You can create an account level network policy using SQL, Snowsight and Classic UI?
+- Difference between security admin and user admin?
+- Which IdP  vendors provide native snowflake support for federated auth and sso? okta, microsoft adfs?
+- benefits of defining clustering keys?
+- Query history page 31 days of history?
+- Which objects are not replicated?
+- Warehouse performance can be evaluated by querying the?
+- When the virtual warehouse data cache gets filled up, in which fashion does the data get flushed out from the data cache? LRU?
+- Presigned url ideal for?
+- Default Character delimiter
+- COPY option that deletes a file from the snowflake stage when data is loaded successfully.
+- Both external and internal stages support unstructured Data.
+- When you Create Or Replace pipe what happens to the load history?
