@@ -4,6 +4,7 @@
 - If I have unstaged files that i want to add to my latest commit I can use `git add file_name` and then `git commit --amend --no-edit` which will add this files to the latest commit and we --no-edit to keep using the same commit message. One thing to keep in mind is that this creates a new commit.
 # Git Split Commit:
 ![Splitting Commits](./../assets/git/split_example.png)
+
 In this example we want to split the commit added navbar and fixed bug into two different commits
 - `git rebase -i HEAD~3`: 
     ![Rebase Interactive Mode](./../assets/git/rebase_interactive.png)
@@ -22,6 +23,7 @@ In this example we want to split the commit added navbar and fixed bug into two 
 - `git reset --soft HEAD~1`: Undo most recent commit. This will undo most recent commit and move the changes into the staging area.
 - `git rebase -i HEAD~2`: This tells git that we intend to manipulate the last 2 commits.
 ![Git Rebase](./../assets/git/git_rebase.png)
+
 The commands on top are the commands that will run on each of the commits specified here at the top in the order that are specified. Each command contains at first the command that will be runned which is `pick` and then the commit that the command will run on. To remove the changes of one commit we need to change the command `pick` to **`drop`**.
 - If we face a conflict during this manipulation we sould use `git rebase --abort` and use `git revert` instead.
 
@@ -34,6 +36,7 @@ The commands on top are the commands that will run on each of the commits specif
 
 # Merge & Rebase:
 - `git merge`: Will take all changes from both those 2 commits and stuff them into one commit, Then put that merge commit on master.
+
 ![Git Merge](./../assets/git/git_merge.png)
 - `git rebase`: What git rebase does is that it takes all the commits from the feature branch and moves them on top of the master commits. When executing this command git will rewrite history on the master branch. The new commits will have the `same Date and Author` but the `commit id` will be different.
 ![Merge VS Rebase](./../assets/git/merge_rebase.png)
