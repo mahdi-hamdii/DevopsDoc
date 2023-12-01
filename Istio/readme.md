@@ -141,3 +141,14 @@ this tool can be used to simulate concurent connections
 - `-n`: number of requests
 - `-c`: number of clients
 - `-m`: max concurent streams to issue per client
+
+## Security In Istio
+
+- **Mutual TLS mTLS**: is a mutual authentication method in which both parties should present a `TLS Certificate`.
+- **Istio Architecture**:
+  ![Alt text](./../assets/istio/security-architecture.png)
+  - Sidecar and perimeter proxies work as `policy enforcement points PEPs` to secure communication between clients and servers.
+  - a set of Envoy proxy extensions to manage telemetry and auditing
+  - In order to enforce mTLS, between services we need to create a `PeerAuthentication` object. If this object is applied on the `istio-system` namespace then this becomes a mesh wide policy.
+  - Workloads that do not apply the same mode cannot reach applications with mTLS enabled.
+- **Authorization**: we can configure authorization policies to Allow, Deny, Custom or Audit incoming calls. Kind of object created is `AuthorizationPolicy`
