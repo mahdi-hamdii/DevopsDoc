@@ -1,5 +1,7 @@
 # DDoS Mitigation
 
+![Alt text](./../assets/aws/ddos_mitigation_layers.png)
+
 - ## Cloud Front:
 
   - Using Content Delivery Network CDN CloudFront to cache and serve static text and images or downloadable objects is common strategy to improve webpage load times and mitigate DDoS.
@@ -21,6 +23,13 @@
   - We can blacklist addresses that exceed request limitS which can be useful for mitigation HTTP flood attacks.
 
   - There are prebuilt CloudFormation template input into the creation of `CommonAttackProtection` stack that includes AWS WAF web ACLs used to block, allow or count requests that meet the criteria defined in each rule.
+  - **WAF Common rules**:
+    - Use rate-based rules.
+    - Review existing rate-based rules and consider lowering the rate limit threshold to block bad requests.
+    - Query the AWS WAF logs to gather specific information of unauthorized activity.
+    - Create a geographic match rule to block bad requests originating from a country that isn't expected for your business.
+    - Create an IP set match rule to block bad requests based on IP addresses.
+    - Create a regex match rule to block bad requests.
   - **Pricing**:
 
     - Any cacheable data transferred to CloudFront edge locations from AWS resources incurs no additional charge. CloudFront charges for data transfers out from its edge locations, along with HTTP or HTTPs requests.
@@ -37,3 +46,5 @@
 Deploying CloudFront, Route53 and AWS WAF enables the built-in DDoS protections for your dynamic web applications that are included with AWS Shield Standard which is designed to meet the needs of many dynamic web applications ( no charge for AWS shield Standard).
 
 AWS Shield Advanced provides additional DDoS mitigation capacity attack visibility, cost protection and access to the AWS DDoS response team DRT.
+
+![Alt text](./../assets/aws/ddos_mitigation_evaluation.png)
