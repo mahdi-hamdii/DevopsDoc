@@ -9,3 +9,6 @@
 - Creeer les credentials dans Jenkins
 - on a utiliser le vault agent pour generer le template
 
+# Vault Associate Objectives
+
+![Alt text](./../assets/vault/exam_objectives.png)
