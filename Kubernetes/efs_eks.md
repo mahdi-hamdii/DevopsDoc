@@ -84,6 +84,7 @@ spec:
 Be sure to run the command for all AZs with the subnetID in the availability zone where your worker nodes are running.
 We can create mount targets for all the AZ where worker nodes are launched. Then, all EC2 instances in the AZ with the mount target can use the file system.
 
+
 # AWS EBS:
 
 - AWS EBS is the default storage for creating persistent volume. But biggest challenge with using EBS as persistent volume in kubernetes cluster is, it can work in `ReadWriteOnce` access mode only which means it can be mounted in read-write mode when all pods are running on single node but if pods are running on multiple nodes, they will not be able to access the data.
