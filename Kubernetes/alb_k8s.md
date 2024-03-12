@@ -10,5 +10,9 @@
 - The AWS Load Balancer controller creates ALB and the necessary supporting AWS resources whenever a K8S ingress resource is created on the cluster with the `kubernetes.io/ingress.class: alb` annotation.
 - When this annotation is added then the field `spec.ingressClassName` should be removed.
 - In order to tag the ALB created by AWS Load balancer controller add the following annotation `alb.ingress.kubernetes.io/tags: x`
-- In order to lower the cost we can share the same ALB with multiple K8S ingress rules. In order to share the same ALB for a team or any combination of apps specify the following annotation `alb.ingress.kubernetes.io/group.name`. All services with the same group name will use the same LoadBalancer
+- In order to lower the cost we can share the same ALB with multiple K8S ingress rules. In order to share the same ALB for a team or any combination of apps specify the following annotation `alb.ingress.kubernetes.io/group.name`. All services with the same group name will use the same LoadBalancer.
+- To create an ALB that is shared by different ingresses across namespaces, we have to add the same `alb.ingress.kubernetes.io/group.name: x-name` tag for all ingress resources created.
 - The ALB performs health checks on the targets in its target group. If all targets are failing health checks, the ALB will return a 503 error.
+
+### References:
+- [Share Same ALB](https://medium.com/@philipdam8/using-a-single-alb-ingress-across-multiple-kubernetes-namespaces-556df9b51f80)
