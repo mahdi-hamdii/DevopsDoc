@@ -13,6 +13,7 @@ terraform {
 ```
 - Create AWS S3 bucket either through the AWS console or by applying the following code(make sure to run either as separate project or to comment the backend block above):
 ```conf
+(Deprecated)
 resource "aws_s3_bucket" "bucket" {
     bucket = "bucket-name"
     versioning {
@@ -35,6 +36,7 @@ resource "aws_s3_bucket" "bucket" {
 ```
 - Create DynamoDB table either through the AWS Console with primary key named `LockID` or with this terraform code:
 ```conf
+(deprecated)
 resource "aws_dynamodb_table" "terraform-lock" {
     name           = "dynamodb-table-name"
     read_capacity  = 5
@@ -50,3 +52,40 @@ resource "aws_dynamodb_table" "terraform-lock" {
 }
 ```
 - When both S3 and DynamoDB table are create we can run terraform init and start working on our infrastructure
+- Up to date terraform code to create remote backend:
+```conf
+provider "aws" {
+  region = "ap-south-1"      
+}
+
+resource "aws_s3_bucket" "terraform_state_bucket" {
+  bucket = "tksterraformstate"
+
+}
+
+resource "aws_s3_bucket_versioning" "terraform_state_bucket" {
+  bucket = aws_s3_bucket.terraform_state_bucket.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state_bucket" {
+  bucket = aws_s3_bucket.terraform_state_bucket.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_dynamodb_table" "terraform_state_lock_table" {
+  name         = "terraform-state-lock"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}
+```
