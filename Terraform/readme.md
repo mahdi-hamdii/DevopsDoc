@@ -92,4 +92,4 @@ resource "aws_dynamodb_table" "terraform_state_lock_table" {
 - **DynamoDB Billing mode**:  Amazon DynamoDB has two pricing models, pricing for on-demand capacity mode and pricing for provisioned capacity mode. with on-demand (Pay-per-request) You do not need to specify how much read and write throughput you expect your application to perform because DynamoDB instantly accommodates your workloads as they ramp up or down.
 
   ### Resources:
-  - ![Medium](https://medium.com/@shantayyaswami/how-to-create-a-remote-backend-on-aws-using-terraform-c4c65d7a02e9)
+  - [Medium](https://medium.com/@shantayyaswami/how-to-create-a-remote-backend-on-aws-using-terraform-c4c65d7a02e9)
