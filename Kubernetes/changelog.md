@@ -51,3 +51,11 @@
 - `Seccomp` is a Linux Kernel feature, it can be used to restrict actions available within a container. The default seccomp profile provides a sane default for running containers with Seccomp and disables around 44 system calls out of 300+.
 - `SeccompDefault` graduates to stable: If enabled then kubelet will use the RuntimeDefault seccomp profile by default, which is defined by the container runtime, instead of using the unconfined mode.
 - In v1.22 K8S introduced a new accessMode `ReadWriteOncePod` for persistent volumes PVS and Persistent Volume Claims PVCS. This access mode enables you to restrict volume access to a single pod in the cluster, ensuring that only one pod can write to a volume at a time.
+
+# Kubernetes 1.27 -> 1.28:
+
+- Skew between core node and control plane components are expanded from n-2 to n-3. Which means node components (kube-proxy and kubelet) for the oldest supported minor version work with controlplane components (kube-apiserver, kube-scheduler, kube-controller-manager and cloud-controller-manager) for the newest supported minor version.
+- with this we have the option to make minor version upgrade to nodes just once a week in each calendar year and still stay with upstream support.
+- If a node shuts down unexpectedly or end up in a non recoverable state (due to hardware failure), K8S allows you to clean up afterward and allow stateful workloads to restart on a different node.
+- In 1.28, two optional fields reason and fieldPath were added to allow user to specify the failure reason and fieldPath when validation failed.
+-
