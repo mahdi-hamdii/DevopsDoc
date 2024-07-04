@@ -209,3 +209,33 @@ plugins:
 ## OPA Gatekeeper:
 
 - `kube-mgmt` automatically discovers policies and JSON data stored in ConfigMaps in Kubernetes and loads them into OPA.
+
+## Encrypting Secrets at Rest:
+
+- `apt-get install etcd-client`: install etcdctl
+
+```bash
+ETCDCTL_API=3 etcdctl --cacert=/etc/kubernetes/pki/etcd/ca.crt
+--cert=/etc/kubernetes/pki/etcd/etcd/server.crt
+--key=/etc/kubernetes/pki/etcd/server.key
+get /registry/secrets/default/my-secret
+```
+
+## Container Sanboxing:
+
+- `Sandboxing` in security refers to any technique that isolates something from the rest of the system.
+- `gVisor` introduces a new layer between the container and the kernel. This measure is done in order to prevent the containers from directly making system calls to the kernel.
+  ![Gvisor](./../assets/Kubernetes/gvisor.png)
+- `Kata Containers`: is about running each container in a separate Light weight virtual machine. In Cloud providers we will need to run nested virtualization in order to use kata containers.
+  ![Kata containers](./../assets/Kubernetes/kata_containers.png)
+- `Container Runtime`:
+  ![Container Runtime](./../assets/Kubernetes/container_runtime.png)
+- We can change the container runtime that we are using from by default `runc` to another one like `kata` or `gvisor` by specifying: `docker run --runtime kata -d nginx`
+- In order to instruct kubernetes to use a specific container runtime we have to create a new object called `RuntimeClass`:
+  ![Runtime Class](./../assets/Kubernetes/runtime_class.png)
+- Static Analysis of Manifests allow you to check and verify the manifests before even executing the kubectl command. one tool of static analysis is `kubesec`
+- `kubesec scan pod.yaml`
+- `curl -sSX --data-binary @"pod.yaml" https://v2.kubesec.io/scan"`
+- `kubesec http 8080`: run kubesec locally
+- `Trivy`: Scan images for known vulnerabilities
+- `trivy image nginx:1.18.0`
