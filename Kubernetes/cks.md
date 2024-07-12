@@ -10,7 +10,9 @@
 ## CIS Benchmarks:
 
 - **Security Benchmark**:  
-  ![alt text](./../assets/Kubernetes/security_benchmarks.png) - There are a lot of tools to asses our servers and one of them is `CIS Center for Internet Security` and it is a community driven non profit organization. - `CIS-CAT Lite`: this tools compares the current configuration of the cluster against the best practices and publishes a report in HTML format. - `Kube-bench` of `Aqua Securityx   `
+  ![alt text](./../assets/Kubernetes/security_benchmarks.png)
+- There are a lot of tools to asses our servers and one of them is `CIS Center for Internet Security` and it is a community driven non profit organization. - `CIS-CAT Lite`: this tools compares the current configuration of the cluster against the best practices and publishes a report in HTML format. - `Kube-bench` of `Aqua Securityx   `
+- `kube-bench run --targets master --check 1.3.2`
 
 ## Kubelet Security:
 
@@ -19,6 +21,11 @@
   - `10255`: Serves API that allows unauthenticated read-only access.
 - By default, kubelet allows all unauthenticated users to call its apis and this behavior can be changed by setting the flag `--anonymous-auth=false` in `kubelet.service` or in the `kubelet-config` file.
 - **Authentication**:
+  - **Generating Certificate for a new Cluster Admin Process**:
+    - `openssl genrsa -out jane.key 2048`
+    - `openssl req -new -key jane.key -sub "/CN=jane" -out jane.csr`
+    - create the CSR object by specifying the `groups` to which user belong, the `usages` and a base64 encoded certificate that we just generated under `request` field.
+    - `kubectl certificate approve jane`
   - `Certificate X509`: In order to do this you have to pass `--client-ca-file=/path/to/ca.crt` and in the curl command you have to now pass `--key` and `--cert`
   - `API Bearer Token`:
 - **Authorization**: The default authorization mode is `--authorization-mode=AlwaysAllow` and to change this behavior we have to change the value to `authorization-mode=webhook`
@@ -69,10 +76,15 @@
 - `lsmod`: list all kernel modules
 - In order to blacklist a kernel module (sctp) of being loaded you can add an entry to `/etc/modprobe.d/blacklist.conf`: `blacklist sctp`
 - To check if a port is open we can use:
+  - `apt install net-tools`: in order to install netstat
   - `netstat -natp | grep -w LISTEN`
   - `cat /etc/services | grep -w 53`: check in what service port 53 is used
+  - `ls -l /proc/22797/exe`: check where the file is located
+  - `rm -f /usr/bin/app1`: remove file
+  - `kill -9 22797`: kill that port
   - `apt list --installed`: list all installed packages
   - `/lib/systemd/system/`: contain the unit files of services
+  - `lsof -i :8080` check if port 8080 is open or not
 
 ## UFW: Uncomplicated Firewall
 
