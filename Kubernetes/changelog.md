@@ -58,4 +58,16 @@
 - with this we have the option to make minor version upgrade to nodes just once a week in each calendar year and still stay with upstream support.
 - If a node shuts down unexpectedly or end up in a non recoverable state (due to hardware failure), K8S allows you to clean up afterward and allow stateful workloads to restart on a different node.
 - In 1.28, two optional fields reason and fieldPath were added to allow user to specify the failure reason and fieldPath when validation failed.
--
+
+# Kubernetes 1.28 -> 1.29
+
+- Node log query graduated to beta
+- Job success/completion policy. indexed jobs support `.spec.successPolicy`
+- `NonIndexed` jobs is considered complete when there has been a number of successfully completed pods equal to the specified number in `.spec.completions`
+- `Indexed` job is considered complete when there is one successfully completed pod associated with each index from 0 to `.spec.completions -1`.The index is exposed to each Pod in the `batch.kubernetes.io/job-completion-index` annotation and the JOB_COMPLETION_INDEX environment variable.
+
+# EKS 1.30
+
+- starting from EKS 1.30, any newly created managed node groups will automatically default to using Amazon Linux 2023, preivously it was Amazon Linux 2
+- this new label `topology.k8s.aws/zone-id` is added to all worker nodes. This can be used to determine the location of your resources in one account relative to resources in another account.
+- The minimum required IAM policy for EKS cluster iam role has changed, now the `ec2:DescribeAvailabilityZones` is also required
