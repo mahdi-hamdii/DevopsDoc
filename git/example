@@ -1,0 +1,25 @@
+      # Generate JWT for the GitHub App
+      - name: Generate JWT for GitHub App
+        id: generate-jwt
+        run: |
+          now=$(date +%s)
+          # Create a JWT for GitHub App authentication
+          header=$(echo -n '{"alg":"RS256","typ":"JWT"}' | openssl base64 -A | tr -d '=' | tr '/+' '_-')
+          payload=$(echo -n "{\"iat\":$now,\"exp\":$((now + 600)),\"iss\":${{ secrets.APP_ID }}}" | openssl base64 -A | tr -d '=' | tr '/+' '_-')
+          unsigned_token="$header.$payload"
+          signature=$(echo -n "$unsigned_token" | openssl dgst -sha256 -sign <(echo "${{ secrets.PRIVATE_KEY }}") | openssl base64 -A | tr -d '=' | tr '/+' '_-')
+          jwt_token="$unsigned_token.$signature"
+          echo "JWT_TOKEN=$jwt_token" >> $GITHUB_ENV
+
+      # Use the JWT to request an installation token for a specific account
+      - name: Generate Installation Token for Specific Account
+        id: generate-installation-token
+        run: |
+          # Use the JWT to request an installation token for a specific account (user/org)
+          response=$(curl -X POST \
+            -H "Authorization: Bearer $JWT_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/app/installations/${{ secrets.INSTALLATION_ID }}/access_tokens)
+          token=$(echo "$response" | jq -r .token)
+          echo "Generated token: $token"
+          echo "INSTALLATION_TOKEN=$token" >> $GITHUB_ENV
