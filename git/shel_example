@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Required Variables
+APP_ID="<your_app_id>"                      # Replace with your GitHub App ID
+ORG_NAME="<your_organization_name>"          # Replace with the organization or user name
+PRIVATE_KEY_PATH="<path_to_private_key>"     # Path to your GitHub App's private key (PEM format)
+
+# Step 1: Generate the JWT for the GitHub App
+now=$(date +%s)
+header=$(echo -n '{"alg":"RS256","typ":"JWT"}' | openssl base64 -A | tr -d '=' | tr '/+' '_-')
+payload=$(echo -n "{\"iat\":$now,\"exp\":$((now + 600)),\"iss\":$APP_ID}" | openssl base64 -A | tr -d '=' | tr '/+' '_-')
+unsigned_token="$header.$payload"
+signature=$(echo -n "$unsigned_token" | openssl dgst -sha256 -sign "$PRIVATE_KEY_PATH" | openssl base64 -A | tr -d '=' | tr '/+' '_-')
+jwt_token="$unsigned_token.$signature"
+
+echo "Generated JWT: $jwt_token"
+
+# Step 2: Retrieve the list of installations for the GitHub App
+installations=$(curl -X GET \
+  -H "Authorization: Bearer $jwt_token" \
+  -H "Accept: application/vnd.github.v3+json" \
+  https://api.github.com/app/installations)
+
+# Step 3: Find the installation ID for the specific organization or user
+installation_id=$(echo "$installations" | jq -r ".[] | select(.account.login==\"$ORG_NAME\") | .id")
+
+if [ -z "$installation_id" ]; then
+  echo "No installation found for organization or user: $ORG_NAME"
+  exit 1
+else
+  echo "Found installation ID: $installation_id for organization/user: $ORG_NAME"
+fi
+
+# Step 4: Use the JWT to request an installation token for the specific organization/user
+response=$(curl -X POST \
+  -H "Authorization: Bearer $jwt_token" \
+  -H "Accept: application/vnd.github.v3+json" \
+  https://api.github.com/app/installations/$installation_id/access_tokens)
+
+# Step 5: Extract the installation token from the response
+installation_token=$(echo "$response" | jq -r .token)
+
+if [ "$installation_token" == "null" ]; then
+  echo "Failed to generate token. Response: $response"
+  exit 1
+else
+  echo "Generated Installation Token: $installation_token"
+fi
+
+# Optional: Save the token to a file
+echo "$installation_token" > github_installation_token.txt
+echo "Token saved to github_installation_token.txt"
+
+# End of script
